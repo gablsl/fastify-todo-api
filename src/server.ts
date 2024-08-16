@@ -1,13 +1,9 @@
 import Fastify from 'fastify';
-import { todoRoutes } from './todoRoutes';
+import { todoRoutes } from './routes/todoRoutes';
 
 const fastify = Fastify({ logger: true });
 
 fastify.register(todoRoutes, { prefix: '/v1' });
-
-fastify.get('/', () => {
-  return { message: 'Welcome to To-Do API' };
-});
 
 const start = async () => {
   const port = process.env.PORT ? parseInt(process.env.PORT, 10) : 3000;
