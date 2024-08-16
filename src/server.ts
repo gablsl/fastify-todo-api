@@ -22,23 +22,33 @@ fastify.post<{ Body: CreateTodoBody }>('/todos', async (req, _res) => {
 
 fastify.put<{ Body: UpdateTodoBody; Params: TodoParams }>(
   '/todos/:id',
-  async (req, _res) => {
+  async (req, res) => {
     const { id } = req.params;
     const { completed } = req.body;
-    const todo = await prisma.todo.update({
-      where: { id: String(id) },
-      data: { completed },
-    });
-    return todo;
+
+    try {
+      const todo = await prisma.todo.update({
+        where: { id: String(id) },
+        data: { completed },
+      });
+      return todo;
+    } catch (err) {
+      res.status(404).send({ message: 'To-do not found' });
+    }
   }
 );
 
-fastify.delete<{ Params: TodoParams }>('/todos/:id', async (req, _res) => {
+fastify.delete<{ Params: TodoParams }>('/todos/:id', async (req, res) => {
   const { id } = req.params;
-  await prisma.todo.delete({
-    where: { id: String(id) },
-  });
-  return { message: 'To-do deleted' };
+
+  try {
+    await prisma.todo.delete({
+      where: { id: String(id) },
+    });
+    return { message: 'To-do deleted' };
+  } catch (err) {
+    res.status(404).send({ message: 'To-do not found' });
+  }
 });
 
 const start = async () => {
